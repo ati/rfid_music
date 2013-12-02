@@ -10,12 +10,12 @@ static byte hisip[] = { 192,168,1,10 };
 byte Ethernet::buffer[700];
 char website[] PROGMEM = "192.168.1.10";
 
-char rfid_id[4];
+unsigned char rfid_id[4];
 byte rfid_id_byte_count = 0;
 
 
 // called when the client request is complete
-static void my_callback (byte status, word off, word len) {
+static void my_callback (byte st, word off, word len) {
   // nothing to do so far
 }
 
@@ -33,7 +33,7 @@ void blink_error()
   for (int i = 0; i < 3; i++)
   {
     digitalWrite(LED, HIGH);
-    delay(100);
+    delay(50);
     digitalWrite(LED, LOW);
     delay(300);
   }
@@ -86,9 +86,8 @@ void loop () {
   
   if (4 == rfid_id_byte_count)
   { 
-    char rfid_urlencoded[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    
-    ether.urlEncode(rfid_id, rfid_urlencoded);
+    char rfid_urlencoded[16];
+    sprintf(rfid_urlencoded, "%02X.%02X.%02X.%02X", rfid_id[0], rfid_id[1], rfid_id[2], rfid_id[3]);
     ether.browseUrl(PSTR("/rfid/1/"), rfid_urlencoded, website, my_callback);
     blink_ok();
     
